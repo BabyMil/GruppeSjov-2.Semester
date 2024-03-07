@@ -1,6 +1,9 @@
 #include <esp_now.h>
 #include <WiFi.h>
-const int pushDown = 32;
+
+const int Lab = 25;
+const int Pirate = 32;
+int ButtonValue = 0;
 
 // REPLACE WITH YOUR RECEIVER MAC Address
 uint8_t broadcastAddress[] = {0xAC, 0x67, 0xB2, 0x35, 0xBF, 0xB0};
@@ -17,7 +20,9 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 }
  
 void setup() {
-  pinMode(pushDown,INPUT_PULLUP);
+  pinMode(Pirat,INPUT);
+  pinMode(Lab,INPUT);
+  
   // Init Serial Monitor
   Serial.begin(115200);
  
@@ -48,14 +53,26 @@ void setup() {
 }
  
 void loop() {
+  int PirateState = digitalRead(Pirate);
+  int LabState = digitalRead(Lab);
 
-  int buttonState = digitalRead(pushDown);
-  Serial.print("Button State: ");
-  Serial.println(buttonState);
+  if (PirateState == 1 && LabState == 0){
+    ButtonValue = 1;
+  } 
+  else if (PirateState == 0 && LabState == 1) 
+  {
+    ButtonValue = 2;
+  } 
+
+  Serial.print("Button State Pirate: ");
+  Serial.println(PirateState);
+
+  Serial.print("Button State Lab: ");
+  Serial.println(LabState);
 
    dataPacket packet;
 
-  packet.state = digitalRead(pushDown);
+  packet.state = digitalRead(ButtonValue);
 
   esp_now_send(broadcastAddress, (uint8_t *) &packet, sizeof(packet));
 
