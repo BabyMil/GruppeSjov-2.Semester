@@ -73,6 +73,8 @@ void loop() {
    dataPacket packet;
 
   packet.state = digitalRead(ButtonValue);
+  Serial.print(ButtonValue);
+  delay(1000);
 
   esp_now_send(broadcastAddress, (uint8_t *) &packet, sizeof(packet));
 
